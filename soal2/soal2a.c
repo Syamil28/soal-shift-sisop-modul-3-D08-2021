@@ -42,7 +42,7 @@ void main()
     	}
     	printf("\nResult:\n");
     	for(i=0;i<4;i++){
-       	for(j=0;j<6;j++){
+       		for(j=0;j<6;j++){
             		printf("%d \t",res[i][j]);
             		value[order]=res[i][j];
             		order++;
