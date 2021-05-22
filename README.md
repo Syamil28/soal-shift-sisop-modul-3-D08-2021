@@ -258,7 +258,7 @@ Awalnya file `soal3.c` masih di luar direktori. Setelah dijalankan file berpinda
 ![alt text](https://i.postimg.cc/SK2VqvKR/Virtual-Box-Ubuntu-20-04-2-0-22-05-2021-18-48-29.png)
 
 ### Kendala
-- Kesulitan dalam mengubah directori awal file ke direktori ekstensionnya
-- Membuat directory baru di working directory
+- Kesulitan dalam mengubah direktori awal file ke direktori ekstensionnya
+- Membuat direktori baru di working direktori
 - Mengetahui bahwa suatu file bersifat Unknown
 
