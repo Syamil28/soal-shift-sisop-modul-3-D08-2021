@@ -121,6 +121,8 @@ shmctl(shmid, IPC_RMID, NULL);
 ```
 Terakhir, shared memory di-dettach dari `mat3` dan shared memory tersebut dihapus.
 
+![Screenshot (81)](https://user-images.githubusercontent.com/62102884/119263685-10fbac00-bc1b-11eb-825f-be007804e8bb.png)
+
 #### Soal 2b
 ```c
 #include <stdio.h>
@@ -275,6 +277,8 @@ shmctl(shmid, IPC_RMID, NULL);
 ```
 Sama seperti soal 2a, shared memory di-dettach dari variable `matA` dan dihapus.
 
+![Screenshot (82)](https://user-images.githubusercontent.com/62102884/119263704-1f49c800-bc1b-11eb-9f0a-6ffac8ebecfe.png)
+
 #### Soal 2c
 ```c
 #include <stdio.h>
@@ -364,6 +368,8 @@ char *argv[] = {"head", "-5", NULL};
 execv("/bin/head", argv);
 ```
 Di program parent, pipe `fd1` akan ditutup karena sudah tidak digunakan. File descriptor untuk standard input diganti menjadi ujung baca dari pipe `fd2` dan pipe tersebut ditutup. Terahir, `head -5` akan dieksekusi dengan bantuan `execv()`.
+
+![Screenshot (83)](https://user-images.githubusercontent.com/62102884/119263731-34bef200-bc1b-11eb-8b1e-90c37a520607.png)
 
 ###Kendala Pengerjaan
 1. Waktu pengerjaan yang bertepatan dengan idul fitri serta ETS.
