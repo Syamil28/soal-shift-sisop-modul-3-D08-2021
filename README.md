@@ -261,9 +261,17 @@ void Add(int sock) {
 
 ```
 #### Soal 1d 
+Terdapat kendala dalam mengerjakan soal 1d sehingga soal tidak dapat diselesaikan. 
+
 #### Soal 1e 
+Terdapat kendala dalam mengerjakan soal 1e sehingga soal tidak dapat diselesaikan. 
+
 #### Soal 1f 
+Terdapat kendala dalam mengerjakan soal 1f sehingga soal tidak dapat diselesaikan. 
+
 #### Soal 1g
+Terdapat kendala dalam mengerjakan soal 1g sehingga soal tidak dapat diselesaikan. 
+
 #### Soal 1h
 memmbuat running.log dengan fopen kemudian menambahkan pada fungsi add dan delete pada server.
 ```
