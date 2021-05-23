@@ -70,12 +70,211 @@ Hapus : File2.ektensi (id:pass)
 ```
 ### Penyelesaian
 #### Soal 1a 
-#### Soal 1a 
-#### Soal 1a 
-#### Soal 1a 
-#### Soal 1a 
-#### Soal 1a 
-#### Soal 1a 
+Server
+Pada potongan kode di bawah terdapat fungsi untuk memebandingkan id dan password yang dikirimkan oleh client dengan data yang ada di akun.txt. jika tidak ada maka kode akan meminta client untuk memilih pilihan login atau registrasi. dan jika login berhasil maka akan diarahkan ke fungsi selanjutnya.
+```
+ if (strcmp(buffer, "login") == 0 || strcmp(buffer, "register") == 0) {
+        char id[1024] = {0};
+        valread = read(new_socket, id, 1024);
+        char password[1024] = {0};
+        valread = read(new_socket, password, 1024);
+
+        printf("id: %s, password: %s\n", id, password);
+
+        if (strcmp(buffer, "register") == 0) {
+            FILE *f;
+            f = fopen("akun.txt", "a+");
+            fprintf(f, "%s:%s\n", id, password);
+
+            char authMessage[100];
+            sprintf(authMessage, "2");
+            send(new_socket, authMessage, strlen(authMessage), 0);
+
+            fclose(f);
+
+            loginRegis(&new_socket);
+        }
+
+        if (strcmp(buffer, "login") == 0) {
+            FILE *f;
+            f = fopen("akun.txt", "a+");
+            char buffer[1024] = "";
+            int isValid = 0;
+
+            while (fgets(buffer, 1024, f) != NULL && !isValid) {
+                char compare_id[1025], compare_pw[1025];
+
+
+                char *token = strtok(buffer, ":");
+                strcpy(compare_id, token);
+
+                token = strtok(NULL, "\n");
+                strcpy(compare_pw, token);
+
+                if (strcmp(compare_id, id) == 0 && strcmp(compare_pw, password) == 0) {
+                    isValid = 1;
+                }
+            }
+
+            char authMessage[500];
+            sprintf(authMessage, "%d", isValid);
+            send(new_socket, authMessage, strlen(authMessage), 0);
+            fclose(f);
+
+            if (isValid) {
+                afterLogin(new_socket, id, password);
+            } else {
+                loginRegis(&new_socket);
+            }
+        }
+```
+Client
+```
+    char option[120], id[100], pass[100];
+    printf("login atau register\n> ");
+    scanf("%s", option);
+
+    if (strcmp(option, "exit") == 0) {
+        send(sock, "exit", strlen("exit"), 0);
+        exit(0);
+    }
+
+    if (!strcmp(option, "login") == 0 && !strcmp(option, "register") == 0) {
+        loginRegis(sock);
+        return;
+    }
+
+    send(sock, option, strlen(option), 0);
+    printf("Id : ");
+    getchar();
+    scanf("%[^\n]s", id);
+    send(sock, id, strlen(id), 0);
+    printf("Password : ");
+    getchar();
+    scanf("%[^\n]s", pass);
+    send(sock, pass, strlen(pass), 0);
+
+
+    char logRegMsg[1024] = {0};
+    int valread;
+    valread = read(sock, logRegMsg, 1024);
+
+    if (strcmp(logRegMsg, "1") == 0) {
+        printf("Login Sukses\n");
+    } else if (strcmp(logRegMsg, "2") == 0) {
+        printf("Register Sukses, silahkan Login\n\n");
+        loginRegis(sock);
+    } else {
+        printf("Login Gagal \n");
+        loginRegis(sock);
+    }
+
+    afterLogin(sock);
+```
+
+#### Soal 1b
+Dengan menambahkan `mkdir("FILES", 0777)` pada fungsi main di server maka saat server dijalankan akan membuat folder file `FILES`
+```
+int main(int argc, char const *argv[]) {
+    int server_fd, new_socket, valread;
+    struct sockaddr_in address;
+    int opt = 1;
+    int addrlen = sizeof(address);
+
+
+    mkdir("FILES", 0777);
+    ...
+   }
+```
+
+Fungsi untuk membuat `files.tsv` pada server 
+```
+        char publikasi[120] = {0};
+        valread = read(sock, publikasi, 1024);
+        char tahunPublikasi[120] = {0};
+        valread = read(sock, tahunPublikasi, 1024);
+        char filename[120] = {0};
+        valread = read(sock, filename, 1024);
+
+        FILE *fp;
+        fp = fopen("files.tsv", "a+");
+        fprintf(fp, "%s\t%s\t%s\n", publikasi, tahunPublikasi, filename);
+        fclose(fp);
+```
+#### Soal 1c 
+Sever
+```
+if (strcmp(buffer, "add") == 0) {
+        char publikasi[120] = {0};
+        valread = read(sock, publikasi, 1024);
+        char tahunPublikasi[120] = {0};
+        valread = read(sock, tahunPublikasi, 1024);
+        char filename[120] = {0};
+        valread = read(sock, filename, 1024);
+
+        FILE *fp;
+        fp = fopen("files.tsv", "a+");
+        fprintf(fp, "%s\t%s\t%s\n", publikasi, tahunPublikasi, filename);
+        fclose(fp);
+
+        fp = fopen("running.log", "a+");
+
+        char *withoutFolder = filename + 6;
+        fprintf(fp, "Tambah: %s (%s:%s)\n", withoutFolder, id, password);
+        fclose(fp);
+
+
+        write_file(sock, filename);
+
+    }
+```
+Client
+```
+void Add(int sock) {
+    send(sock, "add", strlen("add"), 0);
+
+    char publisher[100], tahunPublikasi[100], filename[100];
+    printf("Publisher: ");
+    getchar();
+    scanf("%[^\n]s", publisher);
+    send(sock, publisher, strlen(publisher), 0);
+    printf("Tahun Publikasi: ");
+    getchar();
+    scanf("%[^\n]s", tahunPublikasi);
+    send(sock, tahunPublikasi, strlen(tahunPublikasi), 0);
+    printf("Filepath: ");
+    getchar();
+    scanf("%[^\n]s", filename);
+    send(sock, filename, strlen(filename), 0);
+    sleep(1);
+
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) {
+        perror("ERROR");
+        exit(1);
+    }
+
+    sleep(1);
+    send_file(fp, sock);
+    printf("File terkirim.\n");
+}
+
+```
+#### Soal 1d 
+#### Soal 1e 
+#### Soal 1f 
+#### Soal 1g
+#### Soal 1h
+memmbuat running.log dengan fopen kemudian menambahkan pada fungsi add dan delete pada server.
+```
+        fp = fopen("running.log", "a+");
+
+        char *withoutFolder = filename + 6;
+        fprintf(fp, "Tambah: %s (%s:%s)\n", withoutFolder, id, password);
+        fclose(fp);
+
+```
+
 
 ## **Soal 2**
 ### Penjelasan soal
