@@ -5,53 +5,75 @@
 
 void main()
 {
-        key_t key = 1234;
-	int *value;       
-	int i,j,k;
-    	int matA[4][3];
-    	int matB[3][6];
-    	int res[4][6];
-    	int order=0;
+    int mat1[4][3];
+    int mat2[3][6];
+    int (*mat3)[6];
+    key_t key = 1234;
+    int i;
+    int j;
+    int k;
 
-        int shmid = shmget(key, sizeof(int)*4*6, IPC_CREAT | 0666);
-        int *value;
-        value = shmat(shmid, NULL, 0);
+    int shmid = shmget(key, sizeof(int[4][6]), IPC_CREAT | 0666);
+    if (shmid == -1)
+    {
+        fprintf(stderr, "shmget() Failed");
+        return;
+    }
 
-    
-    	printf("\nInput elements of matrix 4x3:\n");
-    	for(i=0;i<4;i++){
-        	for(j=0;j<3;j++){
-            		scanf("%d",&matA[i][j]);
-        	}
-    	} 
-    
-    	printf("\nInput the elements of matrix 3x6:\n");
-    	for(i=0;i<3;i++){
-        	for(j=0;j<6;j++){
-            		scanf("%d",&matB[i][j]);
-        	}
-    	}
-    
-    	for(i=0;i<4;i++){
-        	for(j=0;j<6;j++){
-            		res[i][j]=0;
-            		for(k=0;k<3;k++){
-                		res[i][j] = res[i][j] + matA[i][k]*matB[k][j];  
-            		}
-        	}
-    	}
-    	printf("\nResult:\n");
-    	for(i=0;i<4;i++){
-       		for(j=0;j<6;j++){
-            		printf("%d \t",res[i][j]);
-            		value[order]=res[i][j];
-            		order++;
-        	}
-        	printf("\n");
-    	}
-    	
-    	sleep(20);
+    mat3 = shmat(shmid, NULL, 0);
+    if(mat3 == (void *)-1) {
+        fprintf(stderr, "shmat() Failed" ); 
+        return;
+    }
 
-        shmdt(value);
-        shmctl(shmid, IPC_RMID, NULL);
+    printf("Input matrix 4x3\n");
+    for (i = 0; i < 4; i++)
+    {
+        for (j = 0; j < 3; j++)
+        {
+            scanf("%d", &mat1[i][j]);
+        }
+    }
+
+    printf("Input matrix 3x6\n");
+    for (i = 0; i < 3; i++)
+    {
+        for (j = 0; j < 6; j++)
+        {
+            scanf("%d", &mat2[i][j]);
+        }
+    }
+
+    for (i = 0; i < 4; i++)
+    {
+        for (j = 0; j < 6; j++)
+        {
+            mat3[i][j] = 0;
+
+            for (k = 0; k < 3; k++)
+            {
+                mat3[i][j] += mat1[i][k] * mat2[k][j];
+            }
+        }
+    }
+
+    printf("Result\n");
+    for (i = 0; i < 4; i++)
+    {
+        for (j = 0; j < 6; j++)
+        {
+            printf("%d ", mat3[i][j]);
+        }
+        printf("\n");
+    }
+
+    char ch;
+    do
+    {
+        printf("Type c to close\n");
+        scanf(" %c", &ch);
+    } while (ch != 'c');
+
+    shmdt(mat3);
+    shmctl(shmid, IPC_RMID, NULL);
 }
